@@ -1,14 +1,16 @@
-# app.py
 import cv2
 import mediapipe as mp
 from flask import Flask, jsonify, Response
 from threading import Thread
+from flask_cors import CORS
 
 # Import your feedback functions
 from Squat_feedback import squat_feedback
 from feedback_color import draw_feedback
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS
+
 
 class VideoProcessor:
     def __init__(self):
@@ -36,19 +38,22 @@ class VideoProcessor:
                                                self.mp_drawing.DrawingSpec(color=color, thickness=2, circle_radius=2),
                                                self.mp_drawing.DrawingSpec(color=color, thickness=2, circle_radius=2))
 
-            cv2.imshow('Pose Estimation', frame)
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
+            # Instead of showing the frame, we handle it in the /video_feed route
+            # cv2.imshow('Pose Estimation', frame)
+            # if cv2.waitKey(1) & 0xFF == ord('q'):
+            #     break
 
         self.cap.release()
-        cv2.destroyAllWindows()
+        # cv2.destroyAllWindows()  # Not needed for web app
 
     def stop_processing(self):
         self.running = False
         if self.thread:
             self.thread.join()
 
+
 video_processor = VideoProcessor()
+
 
 @app.route('/start', methods=['POST'])
 def start_video():
@@ -58,10 +63,12 @@ def start_video():
         return jsonify({"message": "Video processing started"})
     return jsonify({"message": "Video processing already running"})
 
+
 @app.route('/stop', methods=['POST'])
 def stop_video():
     video_processor.stop_processing()
     return jsonify({"message": "Video processing stopped"})
+
 
 @app.route('/video_feed')
 def video_feed():
@@ -70,16 +77,35 @@ def video_feed():
             ret, frame = video_processor.cap.read()
             if not ret:
                 break
+            rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            results = video_processor.pose.process(rgb_frame)
+
+            if results.pose_landmarks:
+                time_feedback, depth_feedback, video_processor.state = squat_feedback(results.pose_landmarks.landmark,
+                                                                                      video_processor.state)
+                color = draw_feedback(frame, results.pose_landmarks, time_feedback, depth_feedback)
+                video_processor.mp_drawing.draw_landmarks(frame, results.pose_landmarks,
+                                                          video_processor.mp_pose.POSE_CONNECTIONS,
+                                                          video_processor.mp_drawing.DrawingSpec(color=color,
+                                                                                                 thickness=2,
+                                                                                                 circle_radius=2),
+                                                          video_processor.mp_drawing.DrawingSpec(color=color,
+                                                                                                 thickness=2,
+                                                                                                 circle_radius=2))
+
             ret, jpeg = cv2.imencode('.jpg', frame)
             if not ret:
                 continue
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + jpeg.tobytes() + b'\r\n')
+
     return Response(generate(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
 
 @app.route('/')
 def home():
     return "Welcome to the RepRight Video Processing API!"
+
 
 if __name__ == '__main__':
     app.run(debug=True)
