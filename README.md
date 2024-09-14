@@ -1,3 +1,4 @@
 opencv
 mediapipe
 Flask
+VideoProcessor
