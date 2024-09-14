@@ -1,7 +1,5 @@
 # draw.py or in main.py
-import mediapipe as mp
 
-mp_drawing = mp.solutions.drawing_utils
 
 def draw_feedback(frame, landmarks, time_feedback, depth_feedback):
     if time_feedback == 'good_duration' and depth_feedback == 'good_depth':
@@ -15,7 +13,5 @@ def draw_feedback(frame, landmarks, time_feedback, depth_feedback):
     else:
         color = (255, 255, 255)  # White while standing up
 
-    # Draw the skeleton in the respective color
-    mp_drawing.draw_landmarks(frame, landmarks, mp.solutions.pose.POSE_CONNECTIONS,
-                              mp_drawing.DrawingSpec(color=color, thickness=2, circle_radius=2),
-                              mp_drawing.DrawingSpec(color=color, thickness=2, circle_radius=2))
+    return color
+
