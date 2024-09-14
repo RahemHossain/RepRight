@@ -1,11 +1,15 @@
+# main.py
 import cv2
 import mediapipe as mp
+import time
 from Squat_feedback import squat_feedback
-from feedback_color import draw_feedback
+from feedback_color import draw_feedback  # or keep this in main.py
 
 mp_pose = mp.solutions.pose
 pose = mp_pose.Pose()
-mp_drawing = mp.solutions.drawing_utils
+
+# Initialize state
+state = 'up'
 
 cap = cv2.VideoCapture(0)
 
@@ -19,15 +23,15 @@ while cap.isOpened():
     results = pose.process(rgb_frame)
 
     if results.pose_landmarks:
-        # Get feedback for squats
-        feedback = squat_feedback(results.pose_landmarks.landmark)
+        # Get feedback for squats (with timing and depth)
+        time_feedback, depth_feedback, state = squat_feedback(results.pose_landmarks.landmark, state)
 
         # Draw feedback with color-coded skeleton
-        draw_feedback(frame, results.pose_landmarks, feedback)
+        draw_feedback(frame, results.pose_landmarks, time_feedback, depth_feedback)
+
+    # Show the frame with feedback
     cv2.imshow('Pose Estimation', frame)
 
-
-    #ends code
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
