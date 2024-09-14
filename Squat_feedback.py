@@ -37,7 +37,7 @@ def squat_feedback(landmarks, state, tolorance_feedback, depth_feedback, time_fe
     if left_knee_angle < 170 and right_knee_angle < 170 and state == 'up':  # Start of a squat (moving down)
         state = 'down'
         start_time = time.time()
-        depth_feedback = 'not_deep_enough'  # Reset depth feedback
+        depth_feedback = 'not deep enough'  # Reset depth feedback
         tolorance_feedback = None  # Reset tolerance feedback
         return time_feedback, depth_feedback, tolorance_feedback, state  # Keep skeleton white while squatting
 
@@ -51,14 +51,14 @@ def squat_feedback(landmarks, state, tolorance_feedback, depth_feedback, time_fe
 
         # Provide timing feedback
         if squat_duration < 2.0:
-            time_feedback = 'too_fast'
+            time_feedback = 'too fast'
         else:
-            time_feedback = 'good_duration'
+            time_feedback = 'good duration'
 
         # Provide depth feedback
-        if depth_feedback == 'not_deep_enough':
+        if depth_feedback == 'not deep enough':
             print("Squat too shallow")
-        elif depth_feedback == 'too_deep':
+        elif depth_feedback == 'too deep':
             print("Squat too deep")
         else:
             print("Good squat depth")
@@ -67,18 +67,17 @@ def squat_feedback(landmarks, state, tolorance_feedback, depth_feedback, time_fe
 
         print("Knees where together: ", tolorance_feedback)
         return time_feedback, depth_feedback, tolorance_feedback, state
-    print(left_knee_angle, right_knee_angle)
     # Check for depth while in the 'down' state
     if state == 'down':
         if left_knee_angle < 75 and right_knee_angle < 75 and (
-                depth_feedback == 'good_depth' or depth_feedback == 'not_deep_enough'):  # Depth too deep
-            depth_feedback = 'too_deep'
+                depth_feedback == 'good depth' or depth_feedback == 'not deep enough'):  # Depth too deep
+            depth_feedback = 'too deep'
         elif (left_knee_angle >= 75 and left_knee_angle <= 130) and (
-                right_knee_angle >= 75 and right_knee_angle <= 130) and depth_feedback == 'not_deep_enough':  # Depth good
-            depth_feedback = 'good_depth'
+                right_knee_angle >= 75 and right_knee_angle <= 130) and depth_feedback == 'not deep enough':  # Depth good
+            depth_feedback = 'good depth'
             # Only update depth_feedback here if depth is too shallow
-        elif depth_feedback != 'too_deep' and depth_feedback != 'good_depth':
-            depth_feedback = 'not_deep_enough'
+        elif depth_feedback != 'too deep' and depth_feedback != 'good depth':
+            depth_feedback = 'not deep enough'
 
         # Check knee alignment only while squatting
         if tolorance_feedback is None:
