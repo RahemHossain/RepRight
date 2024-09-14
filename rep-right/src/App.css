@@ -1,0 +1,33 @@
+* {
+    box-sizing: border-box;
+}
+
+.Header {
+    background: #ffffff;
+    min-height: 50px;
+}
+
+.Logo {
+    width: 200px;
+}
+
+.Body {
+    background: aqua;
+    height: 100vh;
+}
+
+.Container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.Featured-Exercies {
+    text-align: center;
+
+}
+
+div > button {
+    border-radius: 25px;
+}
+
