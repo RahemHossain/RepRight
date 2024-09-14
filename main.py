@@ -15,7 +15,12 @@ state = 'up'
 
 cap = cv2.VideoCapture(0)
 
+
+
+
 while cap.isOpened():
+
+
     ret, frame = cap.read()
     if not ret:
         break
