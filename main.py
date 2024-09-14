@@ -17,7 +17,6 @@ while cap.isOpened():
     ret, frame = cap.read()
     if not ret:
         break
-
     # Convert the BGR image to RGB
     rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     results = pose.process(rgb_frame)
