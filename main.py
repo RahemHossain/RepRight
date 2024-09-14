@@ -1,9 +1,8 @@
-# main.py
 import cv2
 import mediapipe as mp
 import time
 from Squat_feedback import squat_feedback
-from feedback_color import draw_feedback  # or keep this in main.py
+from feedback_color import draw_feedback_box  # Import feedback UI function
 
 mp_drawing = mp.solutions.drawing_utils
 
@@ -15,6 +14,12 @@ state = 'up'
 
 cap = cv2.VideoCapture(0)
 
+depth_feedback = 'not_deep_enough'
+time_feedback = None
+tolorance_feedback = None
+feedback_text = None
+stored_feedback_text = None
+
 while cap.isOpened():
     ret, frame = cap.read()
     if not ret:
@@ -25,15 +30,24 @@ while cap.isOpened():
 
     if results.pose_landmarks:
         # Get feedback for squats (with timing and depth)
-        time_feedback, depth_feedback, state = squat_feedback(results.pose_landmarks.landmark, state)
+        time_feedback, depth_feedback, tolorance_feedback, state = squat_feedback(results.pose_landmarks.landmark, state, tolorance_feedback, depth_feedback, time_feedback)
 
-        # Draw feedback with color-coded skeleton
-        color = draw_feedback(frame, results.pose_landmarks, time_feedback, depth_feedback)
+        # Create feedback text based on the feedback
+        if state == 'up' and time_feedback is not None and depth_feedback is not None and tolorance_feedback is not None:
+            stored_feedback_text = f"Timing: {time_feedback}\n Depth: {depth_feedback}\n Knee Alignment: {tolorance_feedback}"
 
-        # Draw the skeleton in the respective color
+        # Draw the skeleton
+        color = (0, 255, 0)  # Green for good form by default
         mp_drawing.draw_landmarks(frame, results.pose_landmarks, mp.solutions.pose.POSE_CONNECTIONS,
                                   mp_drawing.DrawingSpec(color=color, thickness=2, circle_radius=2),
                                   mp_drawing.DrawingSpec(color=color, thickness=2, circle_radius=2))
+
+        # Draw feedback box if a rep is complete
+        if stored_feedback_text and state == 'up':
+            is_good_rep = 'good_depth' in stored_feedback_text and 'good_duration' in stored_feedback_text
+            draw_feedback_box(frame, stored_feedback_text, is_good_rep)
+
+
 
     # Show the frame with feedback
     cv2.imshow('Pose Estimation', frame)
