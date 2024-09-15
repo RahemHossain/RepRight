@@ -51,12 +51,12 @@ def squat_feedback(landmarks, state, tolorance_feedback, depth_feedback, time_fe
 
         # Provide timing feedback
         if squat_duration < 2.0:
-            time_feedback = 'too fast'
+            time_feedback = 'Too Fast'
         else:
-            time_feedback = 'good duration'
+            time_feedback = 'Good Duration'
 
         # Provide depth feedback
-        if depth_feedback == 'not deep enough':
+        if depth_feedback == 'Not Deep enough':
             print("Squat too shallow")
         elif depth_feedback == 'too deep':
             print("Squat too deep")
