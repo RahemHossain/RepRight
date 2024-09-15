@@ -5,7 +5,7 @@ import './App.css';
 function Squat({ squatDis }) {
   if (squatDis) {
     return (
-      <div>
+      <div className="Squat-Container">
         <h1>Pose Estimation</h1>
         <img
           src="http://127.0.0.1:5000/video_feed"

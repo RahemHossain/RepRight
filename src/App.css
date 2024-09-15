@@ -5,6 +5,7 @@
 .Header {
     background: #ffffff;
     min-height: 50px;
+    border-bottom: black solid 2px;
 }
 
 .Logo {
@@ -28,8 +29,20 @@
 }
 
 div > button {
+    width: 200px;
+    height: 50px;
     text-align: center;
     border-radius: 25px;
     padding: 10px 20px;
     margin: 20px 0; /* Add some space above and below the button */
+}
+
+div > button:hover {
+    border: blue solid 3px;
+    color: blue;
+}
+
+.Squat-Container {
+    padding: 40px;
+    box-shadow: rgba(255, 255, 255, 0.1) 0px 1px 1px 0px inset, rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
 }
