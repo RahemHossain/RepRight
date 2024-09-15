@@ -16,7 +16,7 @@ end_time = None
 
 
 
-def squat_feedback(landmarks, state, tolorance_feedback, depth_feedback, time_feedback):
+def squat_feedback(landmarks, state, tolerance_feedback, depth_feedback, time_feedback):
     global start_time, end_time
 
     # Get coordinates for left and right knee
@@ -37,9 +37,9 @@ def squat_feedback(landmarks, state, tolorance_feedback, depth_feedback, time_fe
     if left_knee_angle < 170 and right_knee_angle < 170 and state == 'up':  # Start of a squat (moving down)
         state = 'down'
         start_time = time.time()
-        depth_feedback = 'not deep enough'  # Reset depth feedback
-        tolorance_feedback = None  # Reset tolerance feedback
-        return time_feedback, depth_feedback, tolorance_feedback, state  # Keep skeleton white while squatting
+        depth_feedback = 'Not Deep Enough'  # Reset depth feedback
+        tolerance_feedback = None  # Reset tolerance feedback
+        return time_feedback, depth_feedback, tolerance_feedback, state  # Keep skeleton white while squatting
 
     # Check for squat end
     elif left_knee_angle > 160 and right_knee_angle > 160 and state == 'down':  # End of a squat (moving up)
@@ -55,7 +55,7 @@ def squat_feedback(landmarks, state, tolorance_feedback, depth_feedback, time_fe
         else:
             time_feedback = 'Good Duration'
 
-        return time_feedback, depth_feedback, tolorance_feedback, state
+        return time_feedback, depth_feedback, tolerance_feedback, state
     # Check for depth while in the 'down' state
     if state == 'down':
         if left_knee_angle < 75 and right_knee_angle < 75 and (
@@ -69,10 +69,10 @@ def squat_feedback(landmarks, state, tolorance_feedback, depth_feedback, time_fe
             depth_feedback = 'Not Deep Enough'
 
         # Check knee alignment only while squatting
-        if tolorance_feedback is None:
-            tolorance_feedback = check_knee_alignment(left_knee_angle, right_knee_angle)
+        if tolerance_feedback is None:
+            tolerance_feedback = check_knee_alignment(left_knee_angle, right_knee_angle)
 
-    return time_feedback, depth_feedback, tolorance_feedback, state
+    return time_feedback, depth_feedback, tolerance_feedback, state
 
 
 

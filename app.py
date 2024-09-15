@@ -65,7 +65,7 @@ def generate_frames():
                 results.pose_landmarks.landmark, state, tolerance_feedback, depth_feedback, time_feedback)
 
             # Create feedback text based on the feedback
-            if state == 'up' and all([time_feedback, depth_feedback, tolerance_feedback]):
+            if state == 'up' and time_feedback is not None and depth_feedback is not None and tolerance_feedback is not None:
                 stored_feedback_text1 = f"Timing: {time_feedback}"
                 stored_feedback_text2 = f"Depth: {depth_feedback}"
                 stored_feedback_text3 = f"Knee Alignment: {tolerance_feedback}"
@@ -81,8 +81,8 @@ def generate_frames():
 
             # Draw feedback boxes if feedback is displayed
             if feedback_displayed:
-                is_good_depth = 'Good Depth' in depth_feedback.lower() if isinstance(depth_feedback, str) else False
-                is_good_time = 'Good Duration' in time_feedback.lower() if isinstance(time_feedback, str) else False
+                is_good_depth = 'Good Depth' in depth_feedback
+                is_good_time = 'Good Duration' in time_feedback
                 is_good_knees = tolerance_feedback
                 draw_feedback_box(frame, stored_feedback_text1, is_good_time, 50)
                 draw_feedback_box(frame, stored_feedback_text2, is_good_depth, 150)
