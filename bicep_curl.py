@@ -1,50 +1,31 @@
 import cv2
 from angle_calc import calculate_angle
 import mediapipe as mp
+from feedback_color import draw_feedback_box
 
 # Initialize mediapipe pose estimation
 mp_pose = mp.solutions.pose
 
 # Function to check bicep curl feedback
-def check_bicep_curl(pose_landmarks):
-    # Calculate angles for left and right arms
-    left_forearm_angle = calculate_angle(pose_landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value],
-                                         pose_landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value],
-                                         pose_landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value])
+# bicep_curl.py
 
-    right_forearm_angle = calculate_angle(pose_landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value],
-                                          pose_landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value],
-                                          pose_landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value])
+def check_bicep_curl(landmarks, state, tolerance_feedback, depth_feedback, time_feedback, side):
+    # Add logic here to calculate the angles for the bicep curl and give feedback
+    # You can reuse logic from squats and adjust the joints you're tracking
 
-    # Define thresholds for a good bicep curl
-    min_curl_angle = 40  # Represents deep enough curl
-    max_curl_angle = 150  # Represents too little curl
+    # Example placeholders for feedback
+    if side == "left":
+        # Perform left-arm bicep curl checks
+        # Check angle of the elbow, shoulder, etc.
+        pass
+    elif side == "right":
+        # Perform right-arm bicep curl checks
+        pass
 
-    # Feedback for left arm
-    if left_forearm_angle < min_curl_angle:
-        left_feedback = "Left arm: Over-curling"
-    elif left_forearm_angle > max_curl_angle:
-        left_feedback = "Left arm: Not curling enough"
-    else:
-        left_feedback = "Left arm: Good form"
+    # Example feedback
+    depth_feedback = "good depth"
+    time_feedback = "good duration"
+    tolerance_feedback = "good alignment"
+    state = "up"  # Set to 'down' when the user is curling
 
-    # Feedback for right arm
-    if right_forearm_angle < min_curl_angle:
-        right_feedback = "Right arm: Over-curling"
-    elif right_forearm_angle > max_curl_angle:
-        right_feedback = "Right arm: Not curling enough"
-    else:
-        right_feedback = "Right arm: Good form"
-
-    return left_feedback, right_feedback
-
-# Function to draw feedback box on the screen
-def draw_feedback_box(image, feedback_text, is_good_form, y_offset):
-    # Set color depending on form quality
-    color = (0, 255, 0) if is_good_form else (0, 0, 255)
-
-    # Draw rectangle for feedback box
-    cv2.rectangle(image, (10, y_offset), (400, y_offset + 40), color, -1)
-
-    # Put feedback text inside the box
-    cv2.putText(image, feedback_text, (20, y_offset + 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+    return time_feedback, depth_feedback, tolerance_feedback, state
