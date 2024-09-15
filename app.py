@@ -4,7 +4,7 @@ import cv2
 import mediapipe as mp
 from Squat_feedback import squat_feedback
 from feedback_color import draw_feedback_box  # Import feedback UI function
-from flask_cors import CORS
+import signal
 
 app = Flask(__name__)
 
@@ -27,6 +27,23 @@ tolerance_feedback = None
 stored_feedback_text1 = None
 stored_feedback_text2 = None
 stored_feedback_text3 = None
+
+# Cleanup function to release resources
+def cleanup_resources():
+    global cap
+    if cap.isOpened():
+        cap.release()
+    cv2.destroyAllWindows()
+
+# Signal handler to ensure cleanup on termination
+def signal_handler(sig, frame):
+    cleanup_resources()
+    print("Exiting cleanly...")
+    exit(0)
+
+# Capture termination signals
+signal.signal(signal.SIGINT, signal_handler)
+signal.signal(signal.SIGTERM, signal_handler)
 
 def generate_frames():
     global state, depth_feedback, time_feedback, tolerance_feedback
@@ -81,7 +98,7 @@ def generate_frames():
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
-    cap.release()
+    cleanup_resources()
 
 @app.route('/video_feed')
 def video_feed():
@@ -93,4 +110,7 @@ def home():
     return "Welcome to the RepRight Video Processing API!"
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    try:
+        app.run(debug=True)
+    finally:
+        cleanup_resources()  # Make sure resources are cleaned up on shutdown
