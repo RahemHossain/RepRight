@@ -48,42 +48,46 @@ signal.signal(signal.SIGTERM, signal_handler)
 def generate_frames():
     global state, depth_feedback, time_feedback, tolerance_feedback
     global stored_feedback_text1, stored_feedback_text2, stored_feedback_text3
-    feedback_displayed = False  # Flag to track if feedback is displayed
+    feedback_displayed = False
+    last_state = 'up'
 
     while True:
         success, frame = cap.read()
         if not success:
             break
 
-        # Convert the BGR image to RGB
         rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         results = pose.process(rgb_frame)
 
         if results.pose_landmarks:
-            # Get feedback for squats (with timing and depth)
-            time_feedback, depth_feedback, tolerance_feedback, state = squat_feedback(
+            time_feedback, depth_feedback, tolerance_feedback, new_state = squat_feedback(
                 results.pose_landmarks.landmark, state, tolerance_feedback, depth_feedback, time_feedback)
 
-            # Create feedback text based on the feedback
-            if state == 'up' and time_feedback is not None and depth_feedback is not None and tolerance_feedback is not None:
+            # Check if a rep has been completed
+            if new_state == 'up' and last_state == 'down':
                 stored_feedback_text1 = f"Timing: {time_feedback}"
                 stored_feedback_text2 = f"Depth: {depth_feedback}"
                 stored_feedback_text3 = f"Knee Alignment: {tolerance_feedback}"
-                feedback_displayed = True  # Set the flag to True to display feedback
-            else:
-                feedback_displayed = False  # Reset the flag if not in 'up' position
+                feedback_displayed = True
+
+            # Check if a new rep has started
+            if new_state == 'down' and last_state == 'up':
+                feedback_displayed = False
+
+            last_state = new_state
+            state = new_state
 
             # Draw the skeleton
-            color = (0, 255, 0)  # Green for good form by default
+            color = (0, 255, 0)
             mp_drawing.draw_landmarks(frame, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
                                       mp_drawing.DrawingSpec(color=color, thickness=2, circle_radius=2),
                                       mp_drawing.DrawingSpec(color=color, thickness=2, circle_radius=2))
 
             # Draw feedback boxes if feedback is displayed
             if feedback_displayed:
-                is_good_depth = 'Good Depth' in depth_feedback
-                is_good_time = 'Good Duration' in time_feedback
-                is_good_knees = tolerance_feedback
+                is_good_depth = 'Good Depth' in depth_feedback if depth_feedback else False
+                is_good_time = 'Good Duration' in time_feedback if time_feedback else False
+                is_good_knees = tolerance_feedback if tolerance_feedback else False
                 draw_feedback_box(frame, stored_feedback_text1, is_good_time, 50)
                 draw_feedback_box(frame, stored_feedback_text2, is_good_depth, 150)
                 draw_feedback_box(frame, stored_feedback_text3, is_good_knees, 250)
