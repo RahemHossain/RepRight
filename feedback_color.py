@@ -28,7 +28,7 @@ def draw_feedback_box(frame, feedback_text, is_good_rep, y_offset):
     alpha = 0.6  # Semi-transparent background
 
     # Define the position and size of the box
-    box_x, box_y, box_width, box_height = 50, y_offset, 400, 75  # Adjust these values to fit your UI design
+    box_x, box_y, box_width, box_height = 50, y_offset, 450, 75  # Adjust these values to fit your UI design
 
     # Create an overlay for transparency
     overlay = frame.copy()  # Copy the frame to create an overlay
@@ -48,12 +48,12 @@ def draw_feedback_box(frame, feedback_text, is_good_rep, y_offset):
     cv2.rectangle(frame, (box_x, box_y), (box_x + box_width, box_y + box_height), box_color, border_radius)
 
     # Add feedback text inside the box
-    font_scale = 0.7
-    thickness = 2
+    font_scale = 1
+    thickness = 3
     font = cv2.FONT_HERSHEY_SIMPLEX
 
     # Split the feedback text into multiple lines
     lines = feedback_text.split('\n')
     for i, line in enumerate(lines):
-        text_y = box_y + 30 + (i * 25)  # Position the text inside the box
-        cv2.putText(frame, line, (box_x + 10, text_y), font, font_scale, text_color, thickness)
+        text_y = box_y + 40 + (i * 25)  # Position the text inside the box
+        cv2.putText(frame, line, (box_x + 15, box_y + int(box_height/2) + 5), font, font_scale, text_color, thickness)
