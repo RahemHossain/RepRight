@@ -8,7 +8,7 @@ function Squat({ squatDis }) {
       <div>
         <h1>Pose Estimation</h1>
         <img
-          src="http://localhost:5000/video_feed"
+          src="http://127.0.0.1:5000/video_feed"
           alt="Video Feed"
           style={{ width: '100%', maxWidth: '800px' }}
         />
