@@ -1,0 +1,58 @@
+name: Python application
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    # Set up Python
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.10"
+
+    # Install Python dependencies
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8 pytest
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+    # Install Node.js and npm
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'  # Adjust the version as needed
+
+    # Install npm dependencies
+    - name: Install npm dependencies
+      run: |
+        npm install
+
+    # Start the application and tests
+    - name: Run npm start and app.py
+      run: |
+        npm start &  # Start npm in the background
+        sleep 10    # Wait for npm to fully start (adjust time if necessary)
+        python app.py &  # Start app.py in the background
+        sleep 10    # Wait for app.py to fully start (adjust time if necessary)
+        pytest      # Run the tests
+      env:
+        FLASK_ENV: test  # Set environment variables if needed
+
+    # Lint with flake8
+    - name: Lint with flake8
+      run: |
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics

@@ -51,33 +51,22 @@ def squat_feedback(landmarks, state, tolorance_feedback, depth_feedback, time_fe
 
         # Provide timing feedback
         if squat_duration < 2.0:
-            time_feedback = 'too fast'
+            time_feedback = 'Too Fast'
         else:
-            time_feedback = 'good duration'
+            time_feedback = 'Good Duration'
 
-        # Provide depth feedback
-        if depth_feedback == 'not deep enough':
-            print("Squat too shallow")
-        elif depth_feedback == 'too deep':
-            print("Squat too deep")
-        else:
-            print("Good squat depth")
-
-        print(f"Timing feedback: {time_feedback}")
-
-        print("Knees where together: ", tolorance_feedback)
         return time_feedback, depth_feedback, tolorance_feedback, state
     # Check for depth while in the 'down' state
     if state == 'down':
         if left_knee_angle < 75 and right_knee_angle < 75 and (
-                depth_feedback == 'good depth' or depth_feedback == 'not deep enough'):  # Depth too deep
-            depth_feedback = 'too deep'
+                depth_feedback == 'Good Depth' or depth_feedback == 'Not Deep Enough'):  # Depth too deep
+            depth_feedback = 'Too Deep'
         elif (left_knee_angle >= 75 and left_knee_angle <= 130) and (
-                right_knee_angle >= 75 and right_knee_angle <= 130) and depth_feedback == 'not deep enough':  # Depth good
-            depth_feedback = 'good depth'
+                right_knee_angle >= 75 and right_knee_angle <= 130) and depth_feedback == 'Not Deep Enough':  # Depth good
+            depth_feedback = 'Good Depth'
             # Only update depth_feedback here if depth is too shallow
-        elif depth_feedback != 'too deep' and depth_feedback != 'good depth':
-            depth_feedback = 'not deep enough'
+        elif depth_feedback != 'Too Deep' and depth_feedback != 'Good Depth':
+            depth_feedback = 'Not Deep Enough'
 
         # Check knee alignment only while squatting
         if tolorance_feedback is None:
