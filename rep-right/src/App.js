@@ -38,12 +38,14 @@ function App() {
           <div className="Featured-Exercises">
             <div className="Squat">
               <h2>Featured Exercise: Squats</h2>
-              <button onClick={handleClick}>
-                {squatDis ? 'Stop Squat Exercise' : 'Click here to work on squats!'}
-              </button>
+                <div className="Container">
+                    <button onClick={handleClick}>
+                        {squatDis ? 'Stop Squat Exercise' : 'Click here to work on squats!'}
+                    </button>
+                </div>
             </div>
           </div>
-          <Squat squatDis={squatDis} />
+            <Squat squatDis={squatDis}/>
         </div>
       </main>
     </div>
