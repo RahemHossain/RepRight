@@ -3,6 +3,7 @@
 The project utilizes Python, Node.JS, React, HTML, CSS
 
 - Download all libraries listed on requirements.txt
+{ Flask, flask-cors, opencv-python, mediapipe }
 
 # We used Python as our main coding language, and used Flask/Node.JS as our backend and used React as our frontend.
 
