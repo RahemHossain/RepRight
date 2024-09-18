@@ -1,6 +1,6 @@
 ## Get Started
 
-The project utilizes Python, Node.JS, React, HTML, CSS
+The project utilizes Python, Node.JS, React, HTML, CSS, Javascript, Procfile
 
 - Download all libraries listed on requirements.txt
   - Flask
